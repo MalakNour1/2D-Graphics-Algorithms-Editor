@@ -12,11 +12,12 @@
 
 #include "eventdispatcher.h"
 #include "menu_id.h"
-#include "structs.h"
+#include "Structs.h"
 
 // team members' Algorithm Files
-#include "circle.h"
-#include "ellipse.h"
+#include "Circle.h"
+#include "Ellipse.h"
+#include "Curve.h"
 
 
 #endif // RESOURCES_H

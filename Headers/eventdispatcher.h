@@ -8,9 +8,10 @@
 #include <cstdio>
 #include <iostream>
 #include "menu_id.h"
-#include "circle.h"
-#include "ellipse.h"
-#include "structs.h"
+#include "Circle.h"
+#include "Ellipse.h"
+#include "Structs.h"
+#include "Curve.h"
 
 using namespace std;
 void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF color) {
@@ -138,6 +139,16 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
         break;
        }
        case 4:{
+          switch (currentWmId) {
+                case ID_CURVE_CARDINAL:{
+                  double c = 0.5; // Tension parameter
+                  DrawCardinalSpline(hdc, points, c, 1000, drawingColor);
+                  Shape S = {currentWmId, points, drawingColor, n};
+                  drawnShapes.push_back(S);
+                  points.clear();
+                  break;
+                }
+          }
         break;
        }
 
