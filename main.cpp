@@ -5,7 +5,7 @@
 #endif
 
 
-#include "resources.h"
+#include "./Headers/Resources.h"
 using namespace std;
 
 void AddMenus(HWND hwnd) {

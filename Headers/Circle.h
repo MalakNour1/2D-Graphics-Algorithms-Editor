@@ -8,7 +8,7 @@
 #include <cstdio>
 #include <iostream>
 #include "menu_id.h"
-#include "structs.h"
+#include "Structs.h"
 
 #define M_PI 3.14159265358979323846
 
