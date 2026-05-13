@@ -10,6 +10,24 @@
 #include "menu_id.h"
 #include "Structs.h"
 
+inline void DrawLineDDA(HDC hdc, int x1, int y1, int x2, int y2, COLORREF c) {
+    int dx = x2 - x1;
+    int dy = y2 - y1;
+    int steps = max(abs(dx), abs(dy));
+
+    double xInc = (double)dx / steps;
+    double yInc = (double)dy / steps;
+
+    double x = x1;
+    double y = y1;
+
+    for (int i = 0; i <= steps; i++) {
+        SetPixel(hdc, round(x), round(y), c);
+        x += xInc;
+        y += yInc;
+    }
+}
+
 inline void DrawLineParametric(HDC hdc, int xs, int ys, int xe, int ye, COLORREF color)
 {
     int dx = xe - xs;

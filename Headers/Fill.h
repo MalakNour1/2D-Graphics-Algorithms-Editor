@@ -11,6 +11,10 @@
 
 #include "menu_id.h"
 #include "Structs.h"
+# include "Line.h"
+# include "Circle.h"
+#include "Curve.h"
+
 
 #define MAXENTRIES 600
 #define MY_MAXINT 100000
@@ -196,6 +200,106 @@ void NonConvexFill(HDC hdc, POINT* polygon, int n, COLORREF color)
 
     delete[] table;
 }
+
+#include <stack>
+
+
+
+void FloodFill(HDC hdc, int x, int y, COLORREF Cb, COLORREF Cf) {
+    COLORREF C = GetPixel(hdc, x, y);
+    if (C == Cb || C == Cf) return;
+
+    SetPixel(hdc, x, y, Cf);
+
+    FloodFill(hdc, x + 1, y, Cb, Cf);
+    FloodFill(hdc, x - 1, y, Cb, Cf);
+    FloodFill(hdc, x, y + 1, Cb, Cf);
+    FloodFill(hdc, x, y - 1, Cb, Cf);
+}
+
+void NRFloodFill(HDC hdc, int x, int y, COLORREF Cb, COLORREF Cf) {
+    stack<Vertex> S;
+    S.push(Vertex(x, y));
+
+    while (!S.empty()) {
+        Vertex v = S.top();
+        S.pop();
+
+        COLORREF c = GetPixel(hdc, v.x, v.y);
+        if (c == Cb || c == Cf) continue;
+
+        SetPixel(hdc, v.x, v.y, Cf);
+
+        S.push(Vertex(v.x + 1, v.y));
+        S.push(Vertex(v.x - 1, v.y));
+        S.push(Vertex(v.x, v.y + 1));
+        S.push(Vertex(v.x, v.y - 1));
+    }
+}
+
+void FillCircleQuarterScanLine(HDC hdc, int xc, int yc, int R, int quarter, COLORREF color) {
+    for (int y_rel = 0; y_rel <= R; y_rel++) {
+        int x_boundary = (int)round(sqrt(R * R - y_rel * y_rel));
+
+        int x_start, x_end, y_pos;
+
+        if (quarter == 1) { // Top-Right
+            x_start = xc; x_end = xc + x_boundary; y_pos = yc - y_rel;
+        } else if (quarter == 2) { // Top-Left
+            x_start = xc - x_boundary; x_end = xc; y_pos = yc - y_rel;
+        } else if (quarter == 3) { // Bottom-Left
+            x_start = xc - x_boundary; x_end = xc; y_pos = yc + y_rel;
+        } else { // Bottom-Right (Quarter 4)
+            x_start = xc; x_end = xc + x_boundary; y_pos = yc + y_rel;
+        }
+
+        for (int x = x_start; x <= x_end; x++) {
+            SetPixel(hdc, x, y_pos, color);
+        }
+    }
+}
+
+
+inline void FillSquareHermiteVertical(HDC hdc, int left, int top, int size, COLORREF color)
+{
+    int right = left + size;
+    int bottom = top + size;
+
+    for (int x = left; x <= right; x += 2)
+    {
+        double distFromEdge = min(x - left, right - x);
+        double damping = distFromEdge / (size / 2.0);
+        double offset = 25.0 * damping;
+
+        Vector2 p1((double)x, (double)top);
+        Vector2 t1(0, 100);
+        Vector2 p2((double)x, (double)bottom);
+        Vector2 t2(0, 100);
+
+        DrawHermiteCurve(hdc, p1, t1, p2, t2, 100, color);
+    }
+}
+inline void FillRectangleBezierHorizontal(HDC hdc, int left, int top, int width, int height, COLORREF color)
+{
+    int right = left + width;
+    int bottom = top + height;
+
+    for (int y = top; y <= bottom; y += 2)
+    {
+        double distFromEdge = min(y - top, bottom - y);
+        double damping = distFromEdge / (height / 2.0);
+
+        double offset = 20.0 * damping;
+
+        POINT p1 = { left, y };
+        POINT p2 = { (int)(left + width / 3), (int)(y + offset) };
+        POINT p3 = { (int)(left + 2 * width / 3), (int)(y - offset) };
+        POINT p4 = { right, y };
+
+        DrawBezierCurve(hdc, p1, p2, p3, p4, color);
+    }
+}
+
 
 
 

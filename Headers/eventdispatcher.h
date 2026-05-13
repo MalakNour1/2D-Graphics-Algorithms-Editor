@@ -14,6 +14,7 @@
 #include "Curve.h"
 #include "Line.h"
 #include "Clipping.h"
+#include "Fill.h"
 using namespace std;
 void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF color) {
     if (currentWmId == 0) return;
@@ -199,6 +200,71 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
              points.clear();
              break;
            }
+           case ID_FILL_CIRC_LINE:
+            {
+                POINT center = points[0];
+                POINT edge = points[1];
+                POINT click = points[2];
+
+                int R = (int)round(sqrt(pow(edge.x - center.x, 2) + pow(edge.y - center.y, 2)));
+                if (R == 0) R = 1;
+
+                int quarter = 0;
+                if (click.x >= center.x && click.y <= center.y) quarter = 1;
+                else if (click.x < center.x && click.y <= center.y) quarter = 2;
+                else if (click.x < center.x && click.y > center.y) quarter = 3;
+                else quarter = 4;
+
+                Shape S = {currentWmId, points, drawingColor, (int)points.size()};
+
+                CircleBresenham(hdc, points, R, drawingColor);
+                FillCircleQuarterScanLine(hdc, center.x, center.y, R, quarter, drawingColor);
+
+
+                drawnShapes.push_back(S);
+
+                points.clear();
+                break;
+            }
+
+           case ID_FILL_SQ_HERMITE:
+           {
+             POINT p1 = points[0];
+             POINT p2 = points[1];
+
+             int left = min(p1.x, p2.x);
+             int top = min(p1.y, p2.y);
+             int size = min(abs(p2.x - p1.x), abs(p2.y - p1.y));
+
+             Rectangle(hdc, left, top, left + size, top + size);
+
+             FillSquareHermiteVertical(hdc, left, top, size, drawingColor);
+
+             Shape S = {currentWmId, points, drawingColor, (int)points.size()};
+             drawnShapes.push_back(S);
+
+             points.clear();
+             break;
+           }
+
+           case ID_FILL_RECT_BEZIER:
+            {
+                POINT p1 = points[0];
+                POINT p2 = points[1];
+
+                int left = min(p1.x, p2.x);
+                int top = min(p1.y, p2.y);
+                int width = abs(p2.x - p1.x);
+                int height = abs(p2.y - p1.y);
+
+                Rectangle(hdc, left, top, left + width, top + height);
+                FillRectangleBezierHorizontal(hdc, left, top, width, height, drawingColor);
+
+                Shape S = {currentWmId, points, drawingColor, (int)points.size()};
+                drawnShapes.push_back(S);
+                points.clear();
+            }
+            break;
          }
         break;
        }
