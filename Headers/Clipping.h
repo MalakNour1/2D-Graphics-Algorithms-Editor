@@ -268,45 +268,67 @@ void ClipPolygonRectangle(HDC hdc, POINT* p, int n,
     }
 }
 
-void ClipPointSquare(HDC hdc, POINT pt, POINT center,
-                     POINT corner, COLORREF color)
+void ClipPointSquare(HDC hdc, POINT pt, POINT squareP1, POINT squareP2, COLORREF color)
 {
-    int side = max(abs(corner.x - center.x), abs(corner.y - center.y));
+    int dx = squareP2.x - squareP1.x;
+    int dy = squareP2.y - squareP1.y;
 
-    double xleft = center.x - side;
-    double xright = center.x + side;
+    int side = max(abs(dx), abs(dy));
 
-    double ytop = center.y - side;
-    double ybottom = center.y + side;
+    int xleft = squareP1.x;
+    int ytop = squareP1.y;
 
-    Rectangle(hdc, (int)xleft, (int)ytop, (int)xright, (int)ybottom);
+    int xright = xleft + (dx >= 0 ? side : -side);
+    int ybottom = ytop + (dy >= 0 ? side : -side);
 
-    if (pointIsInside(pt.x, pt.y, xleft, xright, ytop, ybottom))
+    Rectangle(hdc,
+              min(xleft, xright),
+              min(ytop, ybottom),
+              max(xleft, xright),
+              max(ytop, ybottom));
+
+    if (pointIsInside(pt.x, pt.y,
+                      min(xleft, xright),
+                      max(xleft, xright),
+                      min(ytop, ybottom),
+                      max(ytop, ybottom)))
     {
         SetPixel(hdc, pt.x, pt.y, color);
     }
 }
 
-void ClipLineSquare(HDC hdc, POINT p1, POINT p2,
-                           POINT center, POINT corner, COLORREF color)
+void ClipLineSquare(HDC hdc, POINT p1, POINT p2, POINT squareP1, POINT squareP2, COLORREF color)
 {
-    int side = max(abs(corner.x - center.x), abs(corner.y - center.y));
+    int dx = squareP2.x - squareP1.x;
+    int dy = squareP2.y - squareP1.y;
 
-    double xleft = center.x - side;
-    double xright = center.x + side;
+    int side = max(abs(dx), abs(dy));
 
-    double ytop = center.y - side;
-    double ybottom = center.y + side;
+    int xleft = squareP1.x;
+    int ytop = squareP1.y;
 
-    Rectangle(hdc, (int)xleft, (int)ytop, (int)xright, (int)ybottom);
+    int xright = xleft + (dx >= 0 ? side : -side);
+    int ybottom = ytop + (dy >= 0 ? side : -side);
+
+    Rectangle(hdc,
+              min(xleft, xright),
+              min(ytop, ybottom),
+              max(xleft, xright),
+              max(ytop, ybottom));
 
     double x1 = p1.x, y1 = p1.y;
     double x2 = p2.x, y2 = p2.y;
 
-    if (CohenSuth(x1, y1, x2, y2, xleft, xright, ytop, ybottom))
+    if (CohenSuth(x1, y1, x2, y2,
+                  min(xleft, xright),
+                  max(xleft, xright),
+                  min(ytop, ybottom),
+                  max(ytop, ybottom)))
     {
-        DrawLineMidpoint(hdc, (int)round(x1), (int)round(y1),
-                         (int)round(x2), (int)round(y2), color);
+        DrawLineMidpoint(hdc,
+                         (int)round(x1), (int)round(y1),
+                         (int)round(x2), (int)round(y2),
+                         color);
     }
 }
 
@@ -368,7 +390,5 @@ void ClipLineCircle(HDC hdc, POINT p1, POINT p2,
         y += yInc;
     }
 }
-
-
 
 #endif
