@@ -191,6 +191,23 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                   points.clear();
                   break;
               }
+
+               case ID_LINE_DDA:
+              {
+                  if (points.size() == 2)
+                  {
+                      POINT p1 = points[0];
+                      POINT p2 = points[1];
+
+                      DrawLineDDA(hdc, p1.x, p1.y, p2.x, p2.y, drawingColor);
+
+                      Shape S = {currentWmId, points, drawingColor, (int)points.size()};
+                      drawnShapes.push_back(S);
+
+                      points.clear();
+                  }
+                  break;
+              }
               case ID_BONUS_FACE_HAPPY:
               {
                   POINT center = points[0];
@@ -304,6 +321,31 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                 break;
             }
 
+           case ID_FILL_CIRC_CIRC:
+           {
+             POINT center = points[0];
+             POINT edge = points[1];
+             POINT click = points[2];
+
+             int R = (int)round(sqrt(pow(edge.x - center.x, 2) + pow(edge.y - center.y, 2)));
+
+             int quarter = 0;
+             if (click.x >= center.x && click.y <= center.y) quarter = 1;
+             else if (click.x < center.x && click.y <= center.y) quarter = 2;
+             else if (click.x < center.x && click.y > center.y) quarter = 3;
+             else quarter = 4;
+
+             std::vector<POINT> circlePoints = {center, edge};
+             CircleBresenham(hdc, circlePoints, R, drawingColor);
+
+             FillCircleWithCircles(hdc, center.x, center.y, R, quarter, drawingColor);
+
+             Shape S = {currentWmId, points, drawingColor, (int)points.size()};
+             drawnShapes.push_back(S);
+             points.clear();
+             break;
+           }
+
            case ID_FILL_SQ_HERMITE:
            {
              POINT p1 = points[0];
@@ -381,6 +423,30 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                                  drawingColor);
 
                   Shape S = {currentWmId, points, drawingColor, (int)n};
+                  drawnShapes.push_back(S);
+
+                  points.clear();
+                  break;
+                }
+            case ID_FILL_CIRC_CIRC:
+                {
+                  POINT center = points[0];
+                  POINT edge = points[1];
+                  POINT click = points[2];
+
+                  int R = (int)round(sqrt(pow(edge.x - center.x, 2) + pow(edge.y - center.y, 2)));
+                  if (R == 0) R = 1;
+
+                  int quarter = 0;
+                  if (click.x >= center.x && click.y <= center.y) quarter = 1;
+                  else if (click.x < center.x && click.y <= center.y) quarter = 2;
+                  else if (click.x < center.x && click.y > center.y) quarter = 3;
+                  else quarter = 4;
+
+                  CircleBresenham(hdc, points, R, drawingColor);
+                  FillCircleWithCircles(hdc, center.x, center.y, R, quarter, drawingColor);
+
+                  Shape S = {currentWmId, points, drawingColor, (int)points.size()};
                   drawnShapes.push_back(S);
 
                   points.clear();

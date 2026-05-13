@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <iostream>
 #include <list>
+#include <stack>
 
 #include "menu_id.h"
 #include "Structs.h"
@@ -132,7 +133,7 @@ inline void InitEdgeTable(POINT* polygon, int n, EdgeList table[])
     }
 }
 
-inline void NonConvexFill(HDC hdc, POINT* polygon, int n, COLORREF color)
+void NonConvexFill(HDC hdc, POINT* polygon, int n, COLORREF color)
 {
     EdgeList* table = new EdgeList[MAXENTRIES];
 
@@ -201,7 +202,7 @@ inline void NonConvexFill(HDC hdc, POINT* polygon, int n, COLORREF color)
     delete[] table;
 }
 
-#include <stack>
+
 
 
 
@@ -214,7 +215,7 @@ inline void FloodFill(HDC hdc, int x, int y, COLORREF Cb, COLORREF Cf)
 
     if (C == Cb || C == Cf)
         return;
-    
+
     if (C == CLR_INVALID)
         return;
 
@@ -260,13 +261,21 @@ void FillCircleQuarterScanLine(HDC hdc, int xc, int yc, int R, int quarter, COLO
         int x_start, x_end, y_pos;
 
         if (quarter == 1) { // Top-Right
-            x_start = xc; x_end = xc + x_boundary; y_pos = yc - y_rel;
+            x_start = xc;
+            x_end = xc + x_boundary;
+            y_pos = yc - y_rel;
         } else if (quarter == 2) { // Top-Left
-            x_start = xc - x_boundary; x_end = xc; y_pos = yc - y_rel;
+            x_start = xc - x_boundary;
+            x_end = xc;
+            y_pos = yc - y_rel;
         } else if (quarter == 3) { // Bottom-Left
-            x_start = xc - x_boundary; x_end = xc; y_pos = yc + y_rel;
+            x_start = xc - x_boundary;
+            x_end = xc;
+            y_pos = yc + y_rel;
         } else { // Bottom-Right (Quarter 4)
-            x_start = xc; x_end = xc + x_boundary; y_pos = yc + y_rel;
+            x_start = xc;
+            x_end = xc + x_boundary;
+            y_pos = yc + y_rel;
         }
 
         for (int x = x_start; x <= x_end; x++) {
@@ -275,6 +284,28 @@ void FillCircleQuarterScanLine(HDC hdc, int xc, int yc, int R, int quarter, COLO
     }
 }
 
+
+void FillCircleWithCircles(HDC hdc, int xc, int yc, int R, int quarter, COLORREF color) {
+    // بنمشي نص قطر بنص قطر
+    for (int r = 0; r <= R; r++) {
+        // بدل الزوايا، هنستخدم معادلة الدايرة عشان نملأ كل بكسل
+        for (int x = -r; x <= r; x++) {
+            int y = round(sqrt(r * r - x * x)); // معادلة الدايرة x^2 + y^2 = r^2
+
+            if (quarter == 1 && x >= 0) SetPixel(hdc, xc + x, yc - y, color);
+            else if (quarter == 2 && x <= 0) SetPixel(hdc, xc + x, yc - y, color);
+            else if (quarter == 3 && x <= 0) SetPixel(hdc, xc + x, yc + y, color);
+            else if (quarter == 4 && x >= 0) SetPixel(hdc, xc + x, yc + y, color);
+        }
+        for (int y = -r; y <= r; y++) {
+            int x = round(sqrt(r * r - y * y));
+            if (quarter == 1 && y <= 0) SetPixel(hdc, xc + x, yc + y, color);
+            else if (quarter == 2 && y <= 0) SetPixel(hdc, xc - x, yc + y, color);
+            else if (quarter == 3 && y >= 0) SetPixel(hdc, xc - x, yc + y, color);
+            else if (quarter == 4 && y >= 0) SetPixel(hdc, xc + x, yc + y, color);
+        }
+    }
+}
 
 inline void FillSquareHermiteVertical(HDC hdc, int left, int top, int size, COLORREF color)
 {
