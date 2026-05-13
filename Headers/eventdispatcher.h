@@ -262,43 +262,41 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
           }
         break;
        }
-      case 6:
+      case 7:
        {
          switch (currentWmId)
          {
            case ID_CLIP_RECT_POLY:
            {
-             if (points.size() != 6)
+             if (points.size() != 7)
                return;
 
-             // 1) Rectangle points
+             // Rectangle points
              POINT rectP1 = points[0];
              POINT rectP2 = points[1];
 
-             // 2) Polygon points (REAL 4 points)
-             POINT polygon[4] =
+             //Polygon points
+             POINT polygon[5] =
              {
                points[2],
                points[3],
                points[4],
-               points[5]
+               points[5],
+               points[6]
            };
 
-             // 3) Call clipping
              ClipPolygonRectangle(
                  hdc,
                  polygon,
-                 4,
+                 5,
                  rectP1,
                  rectP2,
                  drawingColor
              );
 
-             // 4) Save shape
-             Shape S = {currentWmId, points, drawingColor, 6};
+             Shape S = {currentWmId, points, drawingColor, 7};
              drawnShapes.push_back(S);
 
-             // 5) cleanup
              points.clear();
 
              break;
