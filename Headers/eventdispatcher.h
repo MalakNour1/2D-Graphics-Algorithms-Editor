@@ -14,6 +14,7 @@
 #include "Curve.h"
 #include "Line.h"
 #include "Clipping.h"
+#include "Face.h"
 using namespace std;
 void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF color) {
     if (currentWmId == 0) return;
@@ -146,6 +147,42 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                   DrawLineMidpoint(hdc, points[0].x, points[0].y, points[1].x, points[1].y, drawingColor);
                   Shape S = {currentWmId, points, drawingColor, (int)n};
                   drawnShapes.push_back(S);
+                  points.clear();
+                  break;
+              }
+              case ID_BONUS_FACE_HAPPY:
+              {
+                  POINT center = points[0];
+                  POINT p2 = points[1];
+
+                  int R = round(sqrt(
+                      pow(p2.x - center.x, 2) +
+                      pow(p2.y - center.y, 2)
+                  ));
+
+                  DrawHappyFace(hdc, center, R, drawingColor);
+
+                  Shape S = {currentWmId, points, drawingColor, (int)n};
+                  drawnShapes.push_back(S);
+
+                  points.clear();
+                  break;
+              }
+              case ID_BONUS_FACE_SAD:
+              {
+                  POINT center = points[0];
+                  POINT p2 = points[1];
+
+                  int R = round(sqrt(
+                      pow(p2.x - center.x, 2) +
+                      pow(p2.y - center.y, 2)
+                  ));
+
+                  DrawSadFace(hdc, center, R, drawingColor);
+
+                  Shape S = {currentWmId, points, drawingColor, (int)n};
+                  drawnShapes.push_back(S);
+
                   points.clear();
                   break;
               }

@@ -22,6 +22,7 @@
 #include "Line.h"
 #include "Clipping.h"
 #include "Fill.h"
+#include "Face.h"
 
 
 
