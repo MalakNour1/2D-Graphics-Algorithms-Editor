@@ -19,6 +19,7 @@
 #include "Ellipse.h"
 #include "Curve.h"
 #include "Line.h"
+#include "Clipping.h"
 
 
 #endif // RESOURCES_H
