@@ -272,6 +272,31 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             InvalidateRect(hwnd, NULL, FALSE);
             break;
         case WM_RBUTTONDOWN:
+            p.x = LOWORD(lParam);
+            p.y = HIWORD(lParam);
+            cout << "Right Mouse Click at: (" << p.x << ", " << p.y << ")" << endl;
+            if(CurrentMenuID == ID_FILL_CONVEX) {
+                if(points.size() >= 3) {
+                    HDC hdc = GetDC(hwnd);
+                    ConvexFill(hdc, points.data(), points.size(), drawingColor);
+                    ReleaseDC(hwnd, hdc);
+                    Shape S = {CurrentMenuID, points, drawingColor, points.size()};
+                    drawnShapes.push_back(S);
+                    points.clear();
+                    InvalidateRect(hwnd, NULL, FALSE);
+                }
+            }
+            else if(CurrentMenuID == ID_FILL_NONCONVEX) {
+                if(points.size() >= 3) {
+                    HDC hdc = GetDC(hwnd);
+                    NonConvexFill(hdc, points.data(), points.size(), drawingColor);
+                    ReleaseDC(hwnd, hdc);
+                    Shape S = {CurrentMenuID, points, drawingColor, points.size()};
+                    drawnShapes.push_back(S);
+                    points.clear();
+                    InvalidateRect(hwnd, NULL, FALSE);
+                }
+            }
             break;
         case WM_DESTROY:
             PostQuitMessage (0);       /* send a WM_QUIT to the message queue */

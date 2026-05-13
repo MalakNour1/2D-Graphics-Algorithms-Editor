@@ -9,6 +9,7 @@
 #include <cmath>
 #include <cstdio>
 #include <iostream>
+#include <list>
 
 #include "eventdispatcher.h"
 #include "menu_id.h"
@@ -19,6 +20,8 @@
 #include "Ellipse.h"
 #include "Curve.h"
 #include "Line.h"
+#include "Fill.h"
+
 
 
 #endif // RESOURCES_H

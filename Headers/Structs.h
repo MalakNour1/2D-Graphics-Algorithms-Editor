@@ -63,6 +63,23 @@ public:
     }
 };
 
+struct Entry
+{
+    int xmin;
+    int xmax;
+};
+
+struct EdgeRec
+{
+    double x;
+    double minv;
+    int ymax;
+
+    bool operator<(EdgeRec r)
+    {
+        return x < r.x;
+    }
+};
 
 #endif // STRUCT_H
 
