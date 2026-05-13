@@ -20,6 +20,7 @@
 #include "Ellipse.h"
 #include "Curve.h"
 #include "Line.h"
+#include "Clipping.h"
 #include "Fill.h"
 
 

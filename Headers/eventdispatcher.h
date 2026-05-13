@@ -13,7 +13,7 @@
 #include "Structs.h"
 #include "Curve.h"
 #include "Line.h"
-
+#include "Clipping.h"
 using namespace std;
 void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF color) {
     if (currentWmId == 0) return;
@@ -153,6 +153,53 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
         break;
        }
        case 3:{
+         switch(currentWmId)
+         {
+           case ID_CLIP_RECT_POINT:
+           {
+             ClipPointRectangle(hdc,
+                                points[0],
+                                points[1],
+                                points[2],
+                                drawingColor);
+
+             Shape S = {currentWmId, points, drawingColor, (int)n};
+             drawnShapes.push_back(S);
+
+             points.clear();
+             break;
+           }
+
+           case ID_CLIP_SQUARE_POINT:
+           {
+             ClipPointSquare(hdc,
+                             points[0],
+                             points[1],
+                             points[2],
+                             drawingColor);
+
+             Shape S = {currentWmId, points, drawingColor, (int)n};
+             drawnShapes.push_back(S);
+
+             points.clear();
+             break;
+           }
+
+           case ID_CLIP_CIRCLE_POINT:
+           {
+             ClipPointCircle(hdc,
+                             points[0],
+                             points[1],
+                             points[2],
+                             drawingColor);
+
+             Shape S = {currentWmId, points, drawingColor, (int)n};
+             drawnShapes.push_back(S);
+
+             points.clear();
+             break;
+           }
+         }
         break;
        }
        case 4:{
@@ -165,10 +212,100 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                   points.clear();
                   break;
                 }
+            case ID_CLIP_RECT_LINE:
+                {
+                  ClipLineRectangle(hdc,
+                                    points[0],
+                                    points[1],
+                                    points[2],
+                                    points[3],
+                                    drawingColor);
+
+                  Shape S = {CurrentMenuID, points, drawingColor, (int)points.size()};
+                  drawnShapes.push_back(S);
+
+                  points.clear();
+                  break;
+                }
+
+            case ID_CLIP_SQUARE_LINE:
+                {
+                  ClipLineSquare(hdc,
+                                 points[0],
+                                 points[1],
+                                 points[2],
+                                 points[3],
+                                 drawingColor);
+
+                  Shape S = {currentWmId, points, drawingColor, (int)n};
+                  drawnShapes.push_back(S);
+
+                  points.clear();
+                  break;
+                }
+
+            case ID_CLIP_CIRCLE_LINE:
+                {
+                  ClipLineCircle(hdc,
+                                 points[0],
+                                 points[1],
+                                 points[2],
+                                 points[3],
+                                 drawingColor);
+
+                  Shape S = {currentWmId, points, drawingColor, (int)n};
+                  drawnShapes.push_back(S);
+
+                  points.clear();
+                  break;
+                }
           }
         break;
        }
+      case 6:
+       {
+         switch (currentWmId)
+         {
+           case ID_CLIP_RECT_POLY:
+           {
+             if (points.size() != 6)
+               return;
 
+             // 1) Rectangle points
+             POINT rectP1 = points[0];
+             POINT rectP2 = points[1];
+
+             // 2) Polygon points (REAL 4 points)
+             POINT polygon[4] =
+             {
+               points[2],
+               points[3],
+               points[4],
+               points[5]
+           };
+
+             // 3) Call clipping
+             ClipPolygonRectangle(
+                 hdc,
+                 polygon,
+                 4,
+                 rectP1,
+                 rectP2,
+                 drawingColor
+             );
+
+             // 4) Save shape
+             Shape S = {currentWmId, points, drawingColor, 6};
+             drawnShapes.push_back(S);
+
+             // 5) cleanup
+             points.clear();
+
+             break;
+           }
+         }
+         break;
+       }
     }
 
     ReleaseDC(hwnd, hdc);

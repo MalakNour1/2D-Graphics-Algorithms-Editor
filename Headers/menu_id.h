@@ -53,9 +53,10 @@
 #define ID_CLIP_RECT_POLY      803
 #define ID_CLIP_SQUARE_POINT   804
 #define ID_CLIP_SQUARE_LINE    805
+#define ID_CLIP_CIRCLE_POINT   806
+#define ID_CLIP_CIRCLE_LINE    807
 
 // Bonus
-#define ID_BONUS_CLIP_CIRC     901
 #define ID_BONUS_FACE_HAPPY    902
 #define ID_BONUS_FACE_SAD      903
 

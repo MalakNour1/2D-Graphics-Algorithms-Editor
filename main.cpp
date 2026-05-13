@@ -85,11 +85,12 @@ void AddMenus(HWND hwnd) {
     AppendMenu(hClip, MF_STRING, ID_CLIP_RECT_POLY, "Rectangle - Polygon");
     AppendMenu(hClip, MF_STRING, ID_CLIP_SQUARE_POINT, "Square - Point");
     AppendMenu(hClip, MF_STRING, ID_CLIP_SQUARE_LINE, "Square - Line");
+    AppendMenu(hClip, MF_STRING, ID_CLIP_CIRCLE_POINT, "Circle - Point");
+    AppendMenu(hClip, MF_STRING, ID_CLIP_CIRCLE_LINE, "Circle - Line");
     AppendMenu(hMenuBar, MF_POPUP, (UINT_PTR)hClip, "&Clipping");
 
     // --- Bonus Menu ---
     HMENU hBonus = CreatePopupMenu();
-    AppendMenu(hBonus, MF_STRING, ID_BONUS_CLIP_CIRC, "Circle Clipping");
     AppendMenu(hBonus, MF_STRING, ID_BONUS_FACE_HAPPY, "Happy Face");
     AppendMenu(hBonus, MF_STRING, ID_BONUS_FACE_SAD, "Sad Face");
     AppendMenu(hMenuBar, MF_POPUP, (UINT_PTR)hBonus, "&Bonus");
