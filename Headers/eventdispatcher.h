@@ -32,43 +32,45 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
 **/
     switch (n) { //to categorize by required Points needed to Draw
        case 1:{
-        case ID_FILL_FLOOD_REC:
-        {
-            COLORREF boundaryColor = drawingColor;
-            COLORREF fillColor = RGB(255,255,0);  
-            FloodFill(
-                hdc,
-                points[0].x,
-                points[0].y,
-                boundaryColor,
-                fillColor
-            );
+        switch (currentWmId) {
+          case ID_FILL_FLOOD_REC:
+          {
+              COLORREF boundaryColor = drawingColor;
+              COLORREF fillColor = RGB(255,255,0);  
+              FloodFill(
+                  hdc,
+                  points[0].x,
+                  points[0].y,
+                  boundaryColor,
+                  fillColor
+              );
 
-            Shape S = {currentWmId, points, drawingColor, (int)n};
-            drawnShapes.push_back(S);
+              Shape S = {currentWmId, points, drawingColor, (int)n};
+              drawnShapes.push_back(S);
 
-            points.clear();
-            break;
-        }
+              points.clear();
+              break;
+          }
 
-        case ID_FILL_FLOOD_NONREC:
-        {
-            COLORREF boundaryColor = drawingColor;
-            COLORREF fillColor = RGB(255,255,0);
+          case ID_FILL_FLOOD_NONREC:
+          {
+              COLORREF boundaryColor = drawingColor;
+              COLORREF fillColor = RGB(255,255,0);
 
-            NRFloodFill(
-                hdc,
-                points[0].x,
-                points[0].y,
-                boundaryColor,
-                fillColor
-            );
+              NRFloodFill(
+                  hdc,
+                  points[0].x,
+                  points[0].y,
+                  boundaryColor,
+                  fillColor
+              );
 
-            Shape S = {currentWmId, points, drawingColor, (int)n};
-            drawnShapes.push_back(S);
+              Shape S = {currentWmId, points, drawingColor, (int)n};
+              drawnShapes.push_back(S);
 
-            points.clear();
-            break;
+              points.clear();
+              break;
+          }
         }
         break;
        }

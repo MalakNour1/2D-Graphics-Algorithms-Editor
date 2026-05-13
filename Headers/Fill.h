@@ -132,7 +132,7 @@ inline void InitEdgeTable(POINT* polygon, int n, EdgeList table[])
     }
 }
 
-void NonConvexFill(HDC hdc, POINT* polygon, int n, COLORREF color)
+inline void NonConvexFill(HDC hdc, POINT* polygon, int n, COLORREF color)
 {
     EdgeList* table = new EdgeList[MAXENTRIES];
 
@@ -205,9 +205,18 @@ void NonConvexFill(HDC hdc, POINT* polygon, int n, COLORREF color)
 
 
 
-void FloodFill(HDC hdc, int x, int y, COLORREF Cb, COLORREF Cf) {
+inline void FloodFill(HDC hdc, int x, int y, COLORREF Cb, COLORREF Cf)
+{
+    if(x < 0 || y < 0 || x > 2000 || y > 2000)
+        return;
+
     COLORREF C = GetPixel(hdc, x, y);
-    if (C == Cb || C == Cf) return;
+
+    if (C == Cb || C == Cf)
+        return;
+    
+    if (C == CLR_INVALID)
+        return;
 
     SetPixel(hdc, x, y, Cf);
 
@@ -217,16 +226,23 @@ void FloodFill(HDC hdc, int x, int y, COLORREF Cb, COLORREF Cf) {
     FloodFill(hdc, x, y - 1, Cb, Cf);
 }
 
-void NRFloodFill(HDC hdc, int x, int y, COLORREF Cb, COLORREF Cf) {
+inline void NRFloodFill(HDC hdc, int x, int y, COLORREF Cb, COLORREF Cf)
+{
     stack<Vertex> S;
     S.push(Vertex(x, y));
 
-    while (!S.empty()) {
+    while (!S.empty())
+    {
         Vertex v = S.top();
         S.pop();
 
+        if(v.x < 0 || v.y < 0 || v.x > 2000 || v.y > 2000)
+            continue;
+
         COLORREF c = GetPixel(hdc, v.x, v.y);
-        if (c == Cb || c == Cf) continue;
+
+        if (c == Cb || c == Cf)
+            continue;
 
         SetPixel(hdc, v.x, v.y, Cf);
 
