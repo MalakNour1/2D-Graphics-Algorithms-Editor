@@ -12,6 +12,7 @@
 #include "Ellipse.h"
 #include "Structs.h"
 #include "Curve.h"
+#include "Line.h"
 
 using namespace std;
 void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF color) {
@@ -131,6 +132,22 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                 drawnShapes.push_back(S);
                 points.clear();
                 break;
+              }
+              case ID_LINE_PARAMETRIC:
+              {
+                  DrawLineParametric(hdc, points[0].x, points[0].y, points[1].x, points[1].y, drawingColor);
+                  Shape S = {currentWmId, points, drawingColor, (int)n};
+                  drawnShapes.push_back(S);
+                  points.clear();
+                  break;
+              }
+              case ID_LINE_MIDPOINT:
+              {
+                  DrawLineMidpoint(hdc, points[0].x, points[0].y, points[1].x, points[1].y, drawingColor);
+                  Shape S = {currentWmId, points, drawingColor, (int)n};
+                  drawnShapes.push_back(S);
+                  points.clear();
+                  break;
               }
            }
         break;

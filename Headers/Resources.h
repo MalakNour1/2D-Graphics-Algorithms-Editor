@@ -18,6 +18,7 @@
 #include "Circle.h"
 #include "Ellipse.h"
 #include "Curve.h"
+#include "Line.h"
 
 
 #endif // RESOURCES_H
