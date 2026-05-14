@@ -14,6 +14,7 @@
 #include "eventdispatcher.h"
 #include "menu_id.h"
 #include "Structs.h"
+#include "filehandler.h"
 
 // team members' Algorithm Files
 #include "Circle.h"

@@ -17,10 +17,8 @@
 #include "Fill.h"
 #include "Face.h"
 using namespace std;
-void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF color) {
-    if (currentWmId == 0) return;
-
-    HDC hdc = GetDC(hwnd);
+void EventDispatcher(HDC hdc, vector<POINT>& points, int currentWmId, COLORREF color, bool storeDrawn = true) {
+    if (currentWmId == 0 || points.empty()) return;
     size_t n = points.size();
 /**
     the Logic here is we categorize them by needed points,
@@ -46,9 +44,10 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
               );
 
               Shape S = {currentWmId, points, drawingColor, (int)n};
-              drawnShapes.push_back(S);
-
-              points.clear();
+              if(storeDrawn) {
+                drawnShapes.push_back(S);
+                points.clear();
+                }
               break;
           }
 
@@ -66,9 +65,10 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
               );
 
               Shape S = {currentWmId, points, drawingColor, (int)n};
-              drawnShapes.push_back(S);
-
-              points.clear();
+              if(storeDrawn) {
+                drawnShapes.push_back(S);
+                points.clear();
+                }
               break;
           }
         }
@@ -82,10 +82,12 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                 POINT p2 = points[1];
                 int R = round(sqrt(pow(p2.x - center.x, 2) + pow(p2.y - center.y, 2)));
                 if (R == 0) R = 1; // Prevent invisible circles
-                CircleDirect(hdc, points, R, drawingColor);
-                Shape S = {currentWmId, points, drawingColor, n};
+                CircleDirect(hdc, points, R, color);
+                Shape S = {currentWmId, points, color, n};
+                if(storeDrawn) {
                 drawnShapes.push_back(S);
                 points.clear();
+                }
                 break;
               }
               case ID_CIRCLE_POLAR:{
@@ -94,10 +96,12 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                 POINT p2 = points[1];
                 int R = round(sqrt(pow(p2.x - center.x, 2) + pow(p2.y - center.y, 2)));
                 if (R == 0) R = 1; // Prevent invisible circles
-                CirclePolar(hdc, points, R, drawingColor);
-                Shape S = {currentWmId, points, drawingColor, n};
+                CirclePolar(hdc, points, R, color);
+                Shape S = {currentWmId, points, color, n};
+                if(storeDrawn) {
                 drawnShapes.push_back(S);
                 points.clear();
+                }
                 break;
               }
               case ID_CIRCLE_ITER_POLAR:{
@@ -106,10 +110,12 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                 POINT p2 = points[1];
                 int R = round(sqrt(pow(p2.x - center.x, 2) + pow(p2.y - center.y, 2)));
                 if (R == 0) R = 1; // Prevent invisible circles
-                CircleIterativePolar(hdc, points, R, drawingColor);
-                Shape S = {currentWmId, points, drawingColor, n};
+                CircleIterativePolar(hdc, points, R, color);
+                Shape S = {currentWmId, points, color, n};
+                if(storeDrawn) {
                 drawnShapes.push_back(S);
                 points.clear();
+                }
                 break;
               }
               case ID_CIRCLE_MIDPOINT:{
@@ -118,10 +124,12 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                 POINT p2 = points[1];
                 int R = round(sqrt(pow(p2.x - center.x, 2) + pow(p2.y - center.y, 2)));
                 if (R == 0) R = 1; // Prevent invisible circles
-                CircleBresenham(hdc, points, R, drawingColor);
-                Shape S = {currentWmId, points, drawingColor, n};
+                CircleBresenham(hdc, points, R, color);
+                Shape S = {currentWmId, points, color, n};
+                if(storeDrawn) {
                 drawnShapes.push_back(S);
                 points.clear();
+                }
                 break;
               }
               case ID_CIRCLE_MOD_MIDPOINT:{
@@ -130,10 +138,12 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                 POINT p2 = points[1];
                 int R = round(sqrt(pow(p2.x - center.x, 2) + pow(p2.y - center.y, 2)));
                 if (R == 0) R = 1; // Prevent invisible circles
-                CircleFasterBresenham(hdc, points, R, drawingColor);
-                Shape S = {currentWmId, points, drawingColor, n};
+                CircleFasterBresenham(hdc, points, R, color);
+                Shape S = {currentWmId, points, color, n};
+                if(storeDrawn) {
                 drawnShapes.push_back(S);
                 points.clear();
+                }
                 break;
               }
               case ID_ELLIPSE_DIRECT: {
@@ -141,12 +151,15 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                 POINT p2 = points[1];
                 int rX = p2.x, rY = p2.y;
                 POINT newP2 = {abs(rX - center.x), abs(rY - center.y)};
-                points.pop_back();
-                points.push_back(newP2);
-                EllipseDirect(hdc, points, drawingColor);
-                Shape S = {currentWmId, points, drawingColor, n};
+                vector<POINT> tmpPoints = points;
+                tmpPoints.pop_back();
+                tmpPoints.push_back(newP2);
+                EllipseDirect(hdc, tmpPoints, color);
+                Shape S = {currentWmId, points, color, n};
+                if(storeDrawn) {
                 drawnShapes.push_back(S);
                 points.clear();
+                }
                 break;
               }
               case ID_ELLIPSE_POLAR: {
@@ -154,12 +167,15 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                 POINT p2 = points[1];
                 int rX = p2.x, rY = p2.y;
                 POINT newP2 = {abs(rX - center.x), abs(rY - center.y)};
-                points.pop_back();
-                points.push_back(newP2);
-                EllipsePolar(hdc, points, drawingColor);
-                Shape S = {currentWmId, points, drawingColor, n};
+                vector<POINT> tmpPoints = points;
+                tmpPoints.pop_back();
+                tmpPoints.push_back(newP2);
+                EllipsePolar(hdc, tmpPoints, color);
+                Shape S = {currentWmId, points, color, n};
+                if(storeDrawn) {
                 drawnShapes.push_back(S);
                 points.clear();
+                }
                 break;
               }
               case ID_ELLIPSE_MIDPOINT: {
@@ -167,28 +183,35 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                 POINT p2 = points[1];
                 int rX = p2.x, rY = p2.y;
                 POINT newP2 = {abs(rX - center.x), abs(rY - center.y)};
-                points.pop_back();
-                points.push_back(newP2);
-                EllipseMidpoint(hdc, points, drawingColor);
-                Shape S = {currentWmId, points, drawingColor, n};
+                vector<POINT> tmpPoints = points;
+                tmpPoints.pop_back();
+                tmpPoints.push_back(newP2);
+                EllipseMidpoint(hdc, tmpPoints, color);
+                Shape S = {currentWmId, points, color, n};
+                if(storeDrawn) {
                 drawnShapes.push_back(S);
                 points.clear();
+                }
                 break;
               }
               case ID_LINE_PARAMETRIC:
               {
-                  DrawLineParametric(hdc, points[0].x, points[0].y, points[1].x, points[1].y, drawingColor);
-                  Shape S = {currentWmId, points, drawingColor, (int)n};
+                  DrawLineParametric(hdc, points[0].x, points[0].y, points[1].x, points[1].y, color);
+                  Shape S = {currentWmId, points, color, (int)n};
+                  if(storeDrawn) {
                   drawnShapes.push_back(S);
                   points.clear();
+                  }
                   break;
               }
               case ID_LINE_MIDPOINT:
               {
-                  DrawLineMidpoint(hdc, points[0].x, points[0].y, points[1].x, points[1].y, drawingColor);
-                  Shape S = {currentWmId, points, drawingColor, (int)n};
+                  DrawLineMidpoint(hdc, points[0].x, points[0].y, points[1].x, points[1].y, color);
+                  Shape S = {currentWmId, points, color, (int)n};
+                  if(storeDrawn) {
                   drawnShapes.push_back(S);
                   points.clear();
+                  }
                   break;
               }
 
@@ -199,12 +222,13 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                       POINT p1 = points[0];
                       POINT p2 = points[1];
 
-                      DrawLineDDA(hdc, p1.x, p1.y, p2.x, p2.y, drawingColor);
+                      DrawLineDDA(hdc, p1.x, p1.y, p2.x, p2.y, color);
 
-                      Shape S = {currentWmId, points, drawingColor, (int)points.size()};
+                      Shape S = {currentWmId, points, color, (int)points.size()};
+                      if(storeDrawn) {
                       drawnShapes.push_back(S);
-
                       points.clear();
+                      }
                   }
                   break;
               }
@@ -218,12 +242,13 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                       pow(p2.y - center.y, 2)
                   ));
 
-                  DrawHappyFace(hdc, center, R, drawingColor);
+                  DrawHappyFace(hdc, center, R, color);
 
-                  Shape S = {currentWmId, points, drawingColor, (int)n};
+                  Shape S = {currentWmId, points, color, (int)n};
+                  if(storeDrawn) {
                   drawnShapes.push_back(S);
-
                   points.clear();
+                  }
                   break;
               }
               case ID_BONUS_FACE_SAD:
@@ -236,12 +261,13 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                       pow(p2.y - center.y, 2)
                   ));
 
-                  DrawSadFace(hdc, center, R, drawingColor);
+                  DrawSadFace(hdc, center, R, color);
 
-                  Shape S = {currentWmId, points, drawingColor, (int)n};
+                  Shape S = {currentWmId, points, color, (int)n};
+                  if(storeDrawn) {
                   drawnShapes.push_back(S);
-
                   points.clear();
+                  }
                   break;
               }
            }
@@ -256,12 +282,13 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                                 points[0],
                                 points[1],
                                 points[2],
-                                drawingColor);
+                                color);
 
-             Shape S = {currentWmId, points, drawingColor, (int)n};
-             drawnShapes.push_back(S);
-
-             points.clear();
+             Shape S = {currentWmId, points, color, (int)n};
+             if(storeDrawn) {
+                drawnShapes.push_back(S);
+                points.clear();
+              }
              break;
            }
 
@@ -271,12 +298,13 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                              points[0],
                              points[1],
                              points[2],
-                             drawingColor);
+                             color);
 
-             Shape S = {currentWmId, points, drawingColor, (int)n};
-             drawnShapes.push_back(S);
-
-             points.clear();
+             Shape S = {currentWmId, points, color, (int)n};
+             if(storeDrawn) {
+                drawnShapes.push_back(S);
+                points.clear();
+              }
              break;
            }
 
@@ -286,12 +314,13 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                              points[0],
                              points[1],
                              points[2],
-                             drawingColor);
+                             color);
 
-             Shape S = {currentWmId, points, drawingColor, (int)n};
-             drawnShapes.push_back(S);
-
-             points.clear();
+             Shape S = {currentWmId, points, color, (int)n};
+             if(storeDrawn) {
+                drawnShapes.push_back(S);
+                points.clear();
+              }
              break;
            }
            case ID_FILL_CIRC_LINE:
@@ -309,15 +338,16 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                 else if (click.x < center.x && click.y > center.y) quarter = 3;
                 else quarter = 4;
 
-                Shape S = {currentWmId, points, drawingColor, (int)points.size()};
+                Shape S = {currentWmId, points, color, (int)points.size()};
 
-                CircleBresenham(hdc, points, R, drawingColor);
-                FillCircleQuarterScanLine(hdc, center.x, center.y, R, quarter, drawingColor);
+                CircleBresenham(hdc, points, R, color);
+                FillCircleQuarterScanLine(hdc, center.x, center.y, R, quarter, color);
 
 
+                if(storeDrawn) {
                 drawnShapes.push_back(S);
-
                 points.clear();
+                }
                 break;
             }
 
@@ -336,13 +366,15 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
              else quarter = 4;
 
              std::vector<POINT> circlePoints = {center, edge};
-             CircleBresenham(hdc, circlePoints, R, drawingColor);
+             CircleBresenham(hdc, circlePoints, R, color);
 
-             FillCircleWithCircles(hdc, center.x, center.y, R, quarter, drawingColor);
+             FillCircleWithCircles(hdc, center.x, center.y, R, quarter, color);
 
-             Shape S = {currentWmId, points, drawingColor, (int)points.size()};
-             drawnShapes.push_back(S);
-             points.clear();
+             Shape S = {currentWmId, points, color, (int)points.size()};
+             if(storeDrawn) {
+                drawnShapes.push_back(S);
+                points.clear();
+                }
              break;
            }
 
@@ -357,12 +389,13 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
 
              Rectangle(hdc, left, top, left + size, top + size);
 
-             FillSquareHermiteVertical(hdc, left, top, size, drawingColor);
+             FillSquareHermiteVertical(hdc, left, top, size, color);
 
-             Shape S = {currentWmId, points, drawingColor, (int)points.size()};
-             drawnShapes.push_back(S);
-
-             points.clear();
+             Shape S = {currentWmId, points, color, (int)points.size()};
+             if(storeDrawn) {
+                drawnShapes.push_back(S);
+                points.clear();
+                }
              break;
            }
 
@@ -377,11 +410,13 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                 int height = abs(p2.y - p1.y);
 
                 Rectangle(hdc, left, top, left + width, top + height);
-                FillRectangleBezierHorizontal(hdc, left, top, width, height, drawingColor);
+                FillRectangleBezierHorizontal(hdc, left, top, width, height, color);
 
-                Shape S = {currentWmId, points, drawingColor, (int)points.size()};
+                Shape S = {currentWmId, points, color, (int)points.size()};
+                if(storeDrawn) {
                 drawnShapes.push_back(S);
                 points.clear();
+                }
             }
             break;
          }
@@ -391,10 +426,12 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
           switch (currentWmId) {
                 case ID_CURVE_CARDINAL:{
                   double c = 0.5; // Tension parameter
-                  DrawCardinalSpline(hdc, points, c, 1000, drawingColor);
-                  Shape S = {currentWmId, points, drawingColor, n};
+                  DrawCardinalSpline(hdc, points, c, 1000, color);
+                  Shape S = {currentWmId, points, color, n};
+                  if(storeDrawn) {
                   drawnShapes.push_back(S);
                   points.clear();
+                  }
                   break;
                 }
             case ID_CLIP_RECT_LINE:
@@ -404,12 +441,13 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                                     points[1],
                                     points[2],
                                     points[3],
-                                    drawingColor);
+                                    color);
 
-                  Shape S = {CurrentMenuID, points, drawingColor, (int)points.size()};
+                  Shape S = {CurrentMenuID, points, color, (int)points.size()};
+                  if(storeDrawn) {
                   drawnShapes.push_back(S);
-
                   points.clear();
+                  }
                   break;
                 }
 
@@ -420,12 +458,13 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                                  points[1],
                                  points[2],
                                  points[3],
-                                 drawingColor);
+                                 color);
 
-                  Shape S = {currentWmId, points, drawingColor, (int)n};
+                  Shape S = {currentWmId, points, color, (int)n};
+                  if(storeDrawn) {
                   drawnShapes.push_back(S);
-
                   points.clear();
+                  } 
                   break;
                 }
             case ID_FILL_CIRC_CIRC:
@@ -443,13 +482,14 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                   else if (click.x < center.x && click.y > center.y) quarter = 3;
                   else quarter = 4;
 
-                  CircleBresenham(hdc, points, R, drawingColor);
-                  FillCircleWithCircles(hdc, center.x, center.y, R, quarter, drawingColor);
+                  CircleBresenham(hdc, points, R, color);
+                  FillCircleWithCircles(hdc, center.x, center.y, R, quarter, color);
 
-                  Shape S = {currentWmId, points, drawingColor, (int)points.size()};
+                  Shape S = {currentWmId, points, color, (int)points.size()};
+                  if(storeDrawn) {
                   drawnShapes.push_back(S);
-
                   points.clear();
+                  }
                   break;
                 }
 
@@ -462,10 +502,11 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                                  points[3],
                                  drawingColor);
 
-                  Shape S = {currentWmId, points, drawingColor, (int)n};
+                  Shape S = {currentWmId, points, color, (int)n};
+                  if(storeDrawn) {
                   drawnShapes.push_back(S);
-
                   points.clear();
+                  }
                   break;
                 }
           }
@@ -500,13 +541,14 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
                  5,
                  rectP1,
                  rectP2,
-                 drawingColor
+                 color
              );
 
-             Shape S = {currentWmId, points, drawingColor, 7};
-             drawnShapes.push_back(S);
-
-             points.clear();
+             Shape S = {currentWmId, points, color, 7};
+             if(storeDrawn) {
+                drawnShapes.push_back(S);
+                points.clear();
+                }
 
              break;
            }
@@ -514,7 +556,11 @@ void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF
          break;
        }
     }
+}
 
+void EventDispatcher(HWND hwnd, vector<POINT>& points, int currentWmId, COLORREF color, bool storeDrawn = true) {
+    HDC hdc = GetDC(hwnd);
+    EventDispatcher(hdc, points, currentWmId, color, storeDrawn);
     ReleaseDC(hwnd, hdc);
 }
 #endif // EVENTDISPATCHER_H

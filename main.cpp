@@ -171,7 +171,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
 HCURSOR hCurrentCursor = LoadCursor(NULL, IDC_ARROW); // Shape of Mouse
 LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    PAINTSTRUCT p;
+    //PAINTSTRUCT p;
     switch (message)                  /* handle the messages */
     {
         case WM_CREATE:{
@@ -192,11 +192,12 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                     break;
 
                 case ID_FILE_SAVE:
-                    // Call your save function
+                    SaveFile("project_data.txt", drawnShapes);
                     break;
 
                 case ID_FILE_LOAD:
-                    // Call your Load function
+                    LoadFile("project_data.txt", drawnShapes);
+                    InvalidateRect(hwnd, NULL, TRUE);
                     break;
                 case ID_PREF_WHITE_BG:
                     SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)GetStockObject(WHITE_BRUSH));
@@ -253,17 +254,29 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             }
             break;
         }
-        case WM_SETCURSOR:
+        case WM_SETCURSOR:{
             if (LOWORD(lParam) == HTCLIENT) {
                 SetCursor(hCurrentCursor);
                 return TRUE;
             }
             break;
-        case WM_PAINT:
-            BeginPaint(hwnd, &p);
-            EndPaint(hwnd, &p);
+        }
+        case WM_PAINT:{
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint(hwnd, &ps);
+
+            // 1. Redraw every shape ever saved in the project
+            DrawLoadedShapes(hdc, drawnShapes);
+
+            // 2. Redraw the points currently being clicked (for the shape in progress)
+            for (const auto& pt : points) {
+                SetPixel(hdc, pt.x, pt.y, drawingColor);
+            }
+
+            EndPaint(hwnd, &ps);
             break;
-        case WM_LBUTTONDOWN:
+        }
+        case WM_LBUTTONDOWN:{
             POINT p;
             p.x = LOWORD(lParam);
             p.y = HIWORD(lParam);
@@ -272,7 +285,9 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             EventDispatcher(hwnd, points, CurrentMenuID, drawingColor);
             InvalidateRect(hwnd, NULL, FALSE);
             break;
-        case WM_RBUTTONDOWN:
+        }
+        case WM_RBUTTONDOWN:{
+            POINT p;
             p.x = LOWORD(lParam);
             p.y = HIWORD(lParam);
             cout << "Right Mouse Click at: (" << p.x << ", " << p.y << ")" << endl;
@@ -299,9 +314,11 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                 }
             }
             break;
-        case WM_DESTROY:
+        }
+        case WM_DESTROY:{
             PostQuitMessage (0);       /* send a WM_QUIT to the message queue */
             break;
+        }
         default:                      /* for messages that we don't deal with */
             return DefWindowProc (hwnd, message, wParam, lParam);
     }
