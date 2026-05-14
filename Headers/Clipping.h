@@ -159,6 +159,8 @@ typedef Vertex (*IntersectFunc)(Vertex& v1, Vertex& v2, int edge);
 
 VertexList ClipWithEdge(VertexList p, int edge, IsInFunc In, IntersectFunc Intersect)
 {
+  	if (p.empty())
+        return VertexList();
     VertexList OutList;
 
     Vertex v1 = p[p.size() - 1];
@@ -214,6 +216,12 @@ Vertex VIntersect(Vertex& v1, Vertex& v2, int xedge)
 {
     Vertex res;
 
+    if (v2.x == v1.x){
+        res.x = xedge;
+        res.y = v1.y;
+        return res;
+    }
+
     res.x = xedge;
     res.y = v1.y + (xedge - v1.x) * (v2.y - v1.y) / (v2.x - v1.x);
 
@@ -223,7 +231,12 @@ Vertex VIntersect(Vertex& v1, Vertex& v2, int xedge)
 Vertex HIntersect(Vertex& v1, Vertex& v2, int yedge)
 {
     Vertex res;
-
+	if (v2.y == v1.y)
+    {
+        res.y = yedge;
+        res.x = v1.x;
+        return res;
+    }
     res.y = yedge;
     res.x = v1.x + (yedge - v1.y) * (v2.x - v1.x) / (v2.y - v1.y);
 
