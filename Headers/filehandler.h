@@ -27,7 +27,6 @@ void SaveFile(string filename, const vector<Shape>& drawnShapes) {
         outFile << sh.MenuID << " " << sh.points.size() << " ";
         // 2. Save all points (x and y)
         for (const auto& p : sh.points) {
-            cout << p.x << " " << p.y << " " << endl;
             outFile << p.x << " " << p.y << " ";
         }
 
