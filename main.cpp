@@ -201,19 +201,23 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                     break;
                 case ID_PREF_WHITE_BG:
                     SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)GetStockObject(WHITE_BRUSH));
+                    cout << "Preference Changed: Changed Background to White!" << endl;
                     InvalidateRect(hwnd, NULL, TRUE);
                     break;
 
                 case ID_PREF_COLOR_RED: {
                     drawingColor = RGB(255, 0, 0);
+                    cout << "Preference Changed: Drawing Color set to RED!" << endl;
                     break;
                 }
                 case ID_PREF_COLOR_BLACK: {
                     drawingColor = RGB(0, 0, 0);
+                    cout << "Preference Changed: Drawing Color set to BLACK!" << endl;
                     break;
                 }
                 case ID_PREF_COLOR_BLUE: {
                     drawingColor = RGB(0, 0, 255);
+                    cout << "Preference Changed: Drawing Color set to BLUE!" << endl;
                     break;
                 }
                 case ID_PREF_CURSOR1:{
