@@ -21,8 +21,6 @@ The application is built using:
 - Win32 API
 - GDI Graphics Functions
 
----
-
 # Features
 
 ## File Menu
@@ -31,15 +29,11 @@ The application is built using:
 - Save all drawn shapes to file
 - Load shapes from saved files
 
----
-
 ## Preferences Menu
 
 - Change background color
 - Change mouse cursor shape
 - Select drawing color
-
----
 
 ## Line Algorithms
 
@@ -48,8 +42,6 @@ Implemented line drawing algorithms:
 - DDA Line
 - Midpoint Line
 - Parametric Line
-
----
 
 ## Circle Algorithms
 
@@ -61,8 +53,6 @@ Implemented circle drawing algorithms:
 - Midpoint Circle
 - Modified Midpoint Circle
 
----
-
 ## Ellipse Algorithms
 
 Implemented ellipse algorithms:
@@ -71,8 +61,6 @@ Implemented ellipse algorithms:
 - Polar Ellipse
 - Midpoint Ellipse
 
----
-
 ## Curves
 
 Implemented curve algorithms:
@@ -80,8 +68,6 @@ Implemented curve algorithms:
 - Cardinal Spline Curve
 - Hermite Curve
 - Bezier Curve
-
----
 
 ## Filling Algorithms
 
@@ -95,8 +81,6 @@ Implemented filling techniques:
 - Non-Convex Polygon Filling
 - Recursive Flood Fill
 - Non-Recursive Flood Fill
-
----
 
 ## Clipping Algorithms
 
@@ -116,7 +100,6 @@ Implemented filling techniques:
 - Point Clipping
 - Line Clipping
 
----
 
 ## Bonus Features
 
@@ -131,7 +114,6 @@ Includes:
 - Happy Face
 - Sad Face
 
----
 
 # User Interaction
 
@@ -141,7 +123,6 @@ The application uses:
 - Menus and dropdown lists
 - Console logs and information display
 
----
 
 # Project Structure
 
@@ -166,7 +147,6 @@ The application uses:
 └── main.cpp
 ```
 
----
 
 # Main Components
 
@@ -178,7 +158,6 @@ Responsible for:
 - Handling Win32 messages
 - Dispatching drawing operations
 
----
 
 ## `eventdispatcher.h`
 
@@ -192,7 +171,6 @@ It:
 - Determines the selected algorithm
 - Calls the appropriate drawing/filling/clipping function
 
----
 
 # Requirements
 
@@ -201,17 +179,3 @@ It:
 - Win32 API
 - MinGW / GCC
 - CLion or any C++ IDE supporting Win32
-
----
-
-# Notes
-
-- All drawing operations are implemented manually without graphics libraries.
-- All rendering is done using Win32 GDI functions.
-- User interaction is fully mouse-based.
-
----
-
-# License
-
-This project is submitted as part of the Computer Graphics course term project at Cairo University.
