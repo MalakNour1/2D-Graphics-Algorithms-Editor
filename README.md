@@ -2,9 +2,6 @@
 
 A complete Windows-based 2D Graphics Drawing Package implemented using Win32 API and C++ for the Computer Graphics course term project at Cairo University.
 
-The project provides interactive drawing, filling, and clipping algorithms using mouse-based input and menu-driven controls.
-
----
 <img width="767" height="456" alt="image" src="https://github.com/user-attachments/assets/f88aed7d-9773-4ae3-9524-5eafe7d9654d" />
 
 ## Overview
