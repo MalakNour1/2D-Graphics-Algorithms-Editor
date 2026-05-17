@@ -35,8 +35,8 @@ OutCode GetOutCode(double x, double y, double xleft, double xright, double ytop,
     if (x < xleft) out.L = 1;
     else if (x > xright) out.R = 1;
 
-    if (y < ytop) out.T = 1;
-    else if (y > ybottom) out.B = 1;
+    if (y > ytop) out.T = 1;
+    else if (y < ybottom) out.B = 1;
 
     return out;
 }
